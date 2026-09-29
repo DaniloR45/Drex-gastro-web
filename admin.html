@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Digital | DREX Gastro</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #FAF8F5;
+            --surface: #FFFFFF;
+            --text-dark: #2C1A1D;
+            --text-muted: #7D6B6D;
+            --primary-accent: #6F4E37; /* Café Espresso */
+            --secondary-accent: #D4AF37; /* Dorado Gourmet */
+            --border-light: #EFE8E1;
+            --shadow: 0 8px 24px rgba(44, 26, 29, 0.06);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); padding-bottom: 110px; }
+
+        /* Top Header */
+        header {
+            background: var(--surface); border-bottom: 1px solid var(--border-light);
+            padding: 16px 24px; position: sticky; top: 0; z-index: 90;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-icon { width: 40px; height: 40px; background: var(--primary-accent); color: #FFF; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .brand-title h1 { font-size: 18px; font-weight: 700; color: var(--text-dark); line-height: 1.2; }
+        .brand-title span { font-size: 11px; color: var(--secondary-accent); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        .btn-sidebar { background: transparent; border: none; font-size: 20px; color: var(--primary-accent); cursor: pointer; }
+
+        /* Modalidad de Pedido Switcher */
+        .order-mode-container { max-width: 800px; margin: 20px auto 10px; padding: 0 20px; }
+        .order-mode-selector { background: #EFE8E1; padding: 4px; border-radius: 12px; display: flex; gap: 4px; }
+        .mode-btn {
+            flex: 1; padding: 10px; border: none; border-radius: 9px; font-size: 13px; font-weight: 600;
+            color: var(--text-muted); background: transparent; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .mode-btn.active { background: var(--surface); color: var(--primary-accent); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+
+        .table-input-box {
+            display: none; margin-top: 10px; background: var(--surface); border: 1px solid var(--border-light);
+            padding: 10px 16px; border-radius: 10px; justify-content: space-between; align-items: center;
+        }
+        .table-input-box.show { display: flex; }
+        .table-input-box input { border: 1px solid var(--border-light); padding: 6px 12px; border-radius: 6px; width: 80px; text-align: center; font-weight: 700; }
+
+        /* Controls */
+        .controls-section { max-width: 800px; margin: 0 auto; padding: 10px 20px; }
+        .search-box {
+            background: var(--surface); border: 1px solid var(--border-light); border-radius: 12px;
+            padding: 12px 16px; display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+        }
+        .search-box input { border: none; outline: none; width: 100%; font-size: 14px; background: transparent; }
+
+        .categories-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+        .cat-chip {
+            white-space: nowrap; padding: 8px 18px; border-radius: 20px; background: var(--surface);
+            border: 1px solid var(--border-light); font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: all 0.3s;
+        }
+        .cat-chip.active { background: var(--primary-accent); color: #FFF; border-color: var(--primary-accent); }
+
+        /* Product Grid */
+        .products-grid { max-width: 800px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .product-card {
+            background: var(--surface); border: 1px solid var(--border-light); border-radius: 16px;
+            overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s; display: flex; flex-direction: column;
+        }
+        .product-card:hover { transform: translateY(-3px); }
+        .product-img { width: 100%; height: 160px; object-fit: cover; }
+        .product-info { padding: 16px; display: flex; flex-direction: column; flex-grow: 1; }
+        .product-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+        .product-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4; flex-grow: 1; }
+        
+        .variant-select {
+            width: 100%; padding: 6px 10px; border: 1px solid var(--border-light); border-radius: 8px;
+            font-size: 12px; color: var(--text-dark); margin-bottom: 12px; background: var(--bg-color); outline: none;
+        }
+
+        .product-footer { display: flex; justify-content: space-between; align-items: center; }
+        .product-price { font-size: 16px; font-weight: 700; color: var(--primary-accent); }
+        .btn-add {
+            background: var(--bg-color); border: 1px solid var(--primary-accent); color: var(--primary-accent);
+            padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-add:hover { background: var(--primary-accent); color: #FFF; }
+
+        /* Floating Cart Bar */
+        .cart-bar {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px;
+            background: var(--primary-accent); color: #FFF; padding: 14px 24px; border-radius: 16px;
+            display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(111, 78, 55, 0.3);
+            cursor: pointer; z-index: 100;
+        }
+        .cart-bar-info { display: flex; align-items: center; gap: 12px; }
+        .cart-count { background: var(--secondary-accent); color: var(--text-dark); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+
+        /* Drawer / Modal Cart */
+        .cart-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); display: none; justify-content: flex-end; z-index: 200; }
+        .cart-content { background: var(--surface); width: 100%; max-width: 420px; height: 100%; padding: 24px; display: flex; flex-direction: column; overflow-y: auto; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 12px; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .promo-code-box { display: flex; gap: 8px; margin: 16px 0; }
+        .promo-code-box input { flex: 1; padding: 8px 12px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 13px; }
+        .btn-pay { background: var(--primary-accent); color: #FFF; border: none; padding: 14px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; margin-top: auto; }
+
+        /* Sidebar Navigation */
+        .sidebar { position: fixed; left: -300px; top: 0; width: 280px; height: 100%; background: var(--surface); z-index: 250; transition: left 0.3s; padding: 30px 20px; border-right: 1px solid var(--border-light); }
+        .sidebar.open { left: 0; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); display: none; z-index: 240; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-cake-candles"></i></div>
+            <div class="brand-title">
+                <h1>Menú Digital</h1>
+                <span>DREX Gastro Demo</span>
+            </div>
+        </div>
+        <button class="btn-sidebar" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    </header>
+
+    <!-- Sidebar Lateral -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <h3 style="margin-bottom: 20px; font-size: 16px; color: var(--primary-accent);">Categorías</h3>
+        <p onclick="filterCategory('todos'); toggleSidebar();" style="padding: 10px 0; cursor: pointer;"><i class="fa-solid fa-border-all"></i> Todo el Catálogo</p>
+        <p onclick="filterCategory('horneados'); toggleSidebar();" style="padding: 10px 0; cursor: pointer;"><i class="fa-solid fa-bread-slice"></i> Horneados</p>
+        <p onclick="filterCategory('masitas'); toggleSidebar();" style="padding: 10px 0; cursor: pointer;"><i class="fa-solid fa-cookie"></i> Masitas & Galletas</p>
+        <p onclick="filterCategory('tortas'); toggleSidebar();" style="padding: 10px 0; cursor: pointer;"><i class="fa-solid fa-cake-candles"></i> Tortas & Pasteles</p>
+        <p onclick="filterCategory('mayoreo'); toggleSidebar();" style="padding: 10px 0; cursor: pointer;"><i class="fa-solid fa-boxes-packing"></i> Pedidos Especiales</p>
+    </div>
+
+    <!-- Modalidad de Pedido -->
+    <div class="order-mode-container">
+        <div class="order-mode-selector">
+            <button class="mode-btn active" id="btnModeDelivery" onclick="setOrderMode('delivery')">
+                <i class="fa-solid fa-truck-ramp-box"></i> Para Llevar / Delivery
+            </button>
+            <button class="mode-btn" id="btnModeTable" onclick="setOrderMode('table')">
+                <i class="fa-solid fa-utensils"></i> Pedir desde mi Mesa
+            </button>
+        </div>
+
+        <div class="table-input-box" id="tableBox">
+            <span style="font-size: 13px; font-weight: 500;"><i class="fa-solid fa-qrcode"></i> Indique número de mesa:</span>
+            <div>Mesa N° <input type="number" id="tableNumber" value="1" min="1"></div>
+        </div>
+    </div>
+
+    <!-- Búsqueda y Filtros -->
+    <div class="controls-section">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted);"></i>
+            <input type="text" id="searchInput" placeholder="Buscar empanada, brownie, torta..." oninput="renderProducts()">
+        </div>
+
+        <div class="categories-scroll">
+            <div class="cat-chip active" onclick="filterCategory('todos', this)">Todos</div>
+            <div class="cat-chip" onclick="filterCategory('horneados', this)">Horneados</div>
+            <div class="cat-chip" onclick="filterCategory('masitas', this)">Masitas</div>
+            <div class="cat-chip" onclick="filterCategory('tortas', this)">Tortas</div>
+            <div class="cat-chip" onclick="filterCategory('mayoreo', this)">Cotización / Mayor</div>
+        </div>
+    </div>
+
+    <!-- Rejilla de Productos -->
+    <div class="products-grid" id="productsGrid"></div>
+
+    <!-- Barra Flotante de Carrito -->
+    <div class="cart-bar" onclick="toggleCartModal()">
+        <div class="cart-bar-info">
+            <div class="cart-count" id="cartCount">0</div>
+            <span style="font-size: 14px; font-weight: 600;">Ver Mi Pedido</span>
+        </div>
+        <span style="font-weight: 700; font-size: 15px;" id="cartTotalBar">0.00 Bs.</span>
+    </div>
+
+    <!-- Drawer Modal de Carrito -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>Resumen de Pedido</h3>
+                <i class="fa-solid fa-xmark" style="cursor: pointer; font-size: 20px;" onclick="toggleCartModal()"></i>
+            </div>
+
+            <div id="cartItemsList" style="flex-grow: 1;"></div>
+
+            <div class="promo-code-box">
+                <input type="text" id="discountCode" placeholder="Código de Descuento">
+                <button class="btn-add" onclick="applyDiscount()">Aplicar</button>
+            </div>
+
+            <div style="border-top: 1px solid var(--border-light); padding-top: 14px; margin-bottom: 14px;">
+                <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px;">
+                    <span>Subtotal:</span>
+                    <span id="subtotalText">0.00 Bs.</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; color: green; display: none;" id="discountRow">
+                    <span>Descuento:</span>
+                    <span id="discountText">-0.00 Bs.</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; color: var(--primary-accent);">
+                    <span>Total a Pagar:</span>
+                    <span id="totalText">0.00 Bs.</span>
+                </div>
+            </div>
+
+            <button class="btn-pay" onclick="processCheckout()"><i class="fa-solid fa-qrcode"></i> Pagar con Código QR</button>
+        </div>
+    </div>
+
+    <script>
+        // BASE DE DATOS DE PRODUCTOS (Estructura en Blanco / Plantilla)
+        const products = [
+            { 
+                id: 1, 
+                nombre: "Pastel de Chocolate Riam", 
+                descripcion: "Pastel sabor chocolate con relleno de mermelada y dulce de leche con almendras.", 
+                precio: 25.00, 
+                categoria: "tortas", 
+                sabores: ["Cacao Intenso", "Chocolate con Frutilla"],
+                imagen: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500" 
+            },
+            { 
+                id: 2, 
+                nombre: "Torta Tres Leches Tradicional", 
+                descripcion: "Biscocho esponjoso bañado en tres leches con canela fina.", 
+                precio: 22.00, 
+                categoria: "tortas", 
+                sabores: ["Vainilla Clásica", "Moka Café"],
+                imagen: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=500" 
+            },
+            { 
+                id: 3, 
+                nombre: "Empanada Hojares de Queso", 
+                descripcion: "Masa crujiente de hojaldre horneada con abundante queso criollo.", 
+                precio: 8.00, 
+                categoria: "horneados", 
+                sabores: ["Queso Tradicional", "Queso y Jamón"],
+                imagen: "https://images.unsplash.com/photo-1628102491629-778571d893a3?w=500" 
+            },
+            { 
+                id: 4, 
+                nombre: "Cuñapé Abizcochado", 
+                descripcion: "Masa horneada de almidón de yuca y queso fresco.", 
+                precio: 5.00, 
+                categoria: "horneados", 
+                sabores: ["Tradicional"],
+                imagen: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500" 
+            },
+            { 
+                id: 5, 
+                nombre: "Brownie Cacao 70%", 
+                descripcion: "Textura húmeda con trozos de nueces seleccionadas.", 
+                precio: 12.00, 
+                categoria: "masitas", 
+                sabores: ["Nuez Clásica", "Chispas de Chocolate"],
+                imagen: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500" 
+            },
+            { 
+                id: 6, 
+                nombre: "Alfajores de Maicena (x3 unidades)", 
+                descripcion: "Galletas suaves rellenas con abundante dulce de leche y coco rallado.", 
+                precio: 15.00, 
+                categoria: "masitas", 
+                sabores: ["Dulce de Leche"],
+                imagen: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500" 
+            },
+            { 
+                id: 7, 
+                nombre: "Pack 50 Mini Cupcakes (Eventos)", 
+                descripcion: "Caja especial para eventos sociales. Cotización con 2 días de anticipación.", 
+                precio: 160.00, 
+                categoria: "mayoreo", 
+                sabores: ["Surtido Vainilla & Choco", "Red Velvet"],
+                imagen: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=500" 
+            }
+        ];
+
+        let cart = [];
+        let activeCategory = 'todos';
+        let currentMode = 'delivery';
+        let discount = 0;
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            grid.innerHTML = '';
+
+            const filtered = products.filter(p => {
+                const matchesCat = (activeCategory === 'todos' || p.categoria === activeCategory);
+                const matchesSearch = p.nombre.toLowerCase().includes(search) || p.descripcion.toLowerCase().includes(search);
+                return matchesCat && matchesSearch;
+            });
+
+            filtered.forEach(p => {
+                let saboresOptions = p.sabores.map(s => `<option value="${s}">${s}</option>`).join('');
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <img src="${p.imagen}" class="product-img" alt="${p.nombre}">
+                        <div class="product-info">
+                            <div class="product-title">${p.nombre}</div>
+                            <div class="product-desc">${p.descripcion}</div>
+                            
+                            <select class="variant-select" id="sabor-${p.id}">
+                                ${saboresOptions}
+                            </select>
+
+                            <div class="product-footer">
+                                <div class="product-price">${p.precio.toFixed(2)} Bs.</div>
+                                <button class="btn-add" onclick="addToCart(${p.id})">+ Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterCategory(cat, element) {
+            activeCategory = cat;
+            if(element) {
+                document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+                element.classList.add('active');
+            }
+            renderProducts();
+        }
+
+        function setOrderMode(mode) {
+            currentMode = mode;
+            document.getElementById('btnModeDelivery').classList.toggle('active', mode === 'delivery');
+            document.getElementById('btnModeTable').classList.toggle('active', mode === 'table');
+            document.getElementById('tableBox').classList.toggle('show', mode === 'table');
+        }
+
+        function addToCart(id) {
+            const prod = products.find(p => p.id === id);
+            const saborElegido = document.getElementById(`sabor-${id}`).value;
+            const itemKey = `${id}-${saborElegido}`;
+
+            const item = cart.find(c => c.key === itemKey);
+            if(item) { 
+                item.qty++; 
+            } else { 
+                cart.push({ ...prod, key: itemKey, sabor: saborElegido, qty: 1 }); 
+            }
+            updateCart();
+        }
+
+        function updateCart() {
+            const count = cart.reduce((sum, i) => sum + i.qty, 0);
+            const subtotal = cart.reduce((sum, i) => sum + (i.precio * i.qty), 0);
+            const total = Math.max(0, subtotal - discount);
+
+            document.getElementById('cartCount').innerText = count;
+            document.getElementById('cartTotalBar').innerText = `${total.toFixed(2)} Bs.`;
+            document.getElementById('subtotalText').innerText = `${subtotal.toFixed(2)} Bs.`;
+            document.getElementById('totalText').innerText = `${total.toFixed(2)} Bs.`;
+
+            const list = document.getElementById('cartItemsList');
+            list.innerHTML = cart.length === 0 ? '<p style="color:var(--text-muted); font-size:13px;">Tu carrito está vacío.</p>' : '';
+            cart.forEach(item => {
+                list.innerHTML += `
+                    <div class="cart-item">
+                        <div>
+                            <div style="font-size:13px; font-weight:600;">${item.nombre}</div>
+                            <div style="font-size:11px; color:var(--secondary-accent); font-weight:600;">Sabor: ${item.sabor}</div>
+                            <div style="font-size:12px; color:var(--text-muted);">${item.precio.toFixed(2)} Bs. x ${item.qty}</div>
+                        </div>
+                        <div style="font-weight:700;">${(item.precio * item.qty).toFixed(2)} Bs.</div>
+                    </div>
+                `;
+            });
+        }
+
+        function applyDiscount() {
+            const code = document.getElementById('discountCode').value.trim().toUpperCase();
+            if(code === 'DREX10') {
+                discount = 10.00;
+                document.getElementById('discountRow').style.display = 'flex';
+                document.getElementById('discountText').innerText = `-10.00 Bs.`;
+                alert('¡Código de descuento DREX10 aplicado!');
+            } else {
+                alert('Código no válido. Intenta con DREX10');
+            }
+            updateCart();
+        }
+
+        function toggleCartModal() {
+            const modal = document.getElementById('cartModal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            const overlay = document.getElementById('sidebarOverlay');
+            overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function processCheckout() {
+            if(cart.length === 0) return alert('El carrito está vacío.');
+            const mesa = currentMode === 'table' ? ` (Mesa N° ${document.getElementById('tableNumber').value})` : ' (Para Llevar / Delivery)';
+            alert(`¡Pedido Generado Exitosamente${mesa}!\nRedirigiendo al portal de pago por QR...`);
+        }
+
+        renderProducts();
+    </script>
+</body>
+</html>
