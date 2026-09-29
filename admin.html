@@ -3,447 +3,634 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración & Almacén | DREX Gastro</title>
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Panel de Control & Gestión - Drex Gastro</title>
+    <!-- Tailwind CSS desde CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        /* ==========================================================================
-           1. VARIABLES GLOBALES DE DISEÑO
-           ========================================================================== */
-        :root {
-            --bg-color: #F4F6F9;          /* Fondo panel administrativo */
-            --surface: #FFFFFF;           /* Tarjetas y modales */
-            --primary-accent: #2C3E50;    /* Dark Navy industrial */
-            --primary-hover: #1A252F;
-            --brand-color: #6F4E37;       /* Espresso DREX */
-            --text-dark: #2C1A1D;
-            --text-muted: #7F8C8D;
-            --border-light: #E2E8F0;
-            --success-color: #2ECC71;
-            --warning-color: #F39C12;
-            --danger-color: #E74C3C;
-            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
-            --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
-
-        /* ==========================================================================
-           2. ENCABEZADO Y NAVEGACIÓN
-           ========================================================================== */
-        header {
-            background: var(--primary-accent); color: #FFF; padding: 14px 24px;
-            display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm);
-        }
-        .admin-brand { display: flex; align-items: center; gap: 12px; }
-        .admin-brand i { font-size: 20px; color: #F1C40F; }
-        .admin-brand h1 { font-size: 18px; font-weight: 700; }
-        .admin-brand span { font-size: 11px; color: #BDC3C7; text-transform: uppercase; letter-spacing: 1px; }
-
-        .user-badge { display: flex; align-items: center; gap: 8px; font-size: 13px; background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 20px; }
-
-        /* Tabs de Navegación */
-        .admin-nav { background: var(--surface); border-bottom: 1px solid var(--border-light); padding: 0 24px; display: flex; gap: 8px; }
-        .nav-tab {
-            padding: 14px 20px; font-size: 13px; font-weight: 600; color: var(--text-muted);
-            border-bottom: 3px solid transparent; cursor: pointer; transition: var(--transition-fast); display: flex; align-items: center; gap: 8px;
-        }
-        .nav-tab:hover { color: var(--primary-accent); }
-        .nav-tab.active { color: var(--primary-accent); border-bottom-color: var(--brand-color); }
-
-        /* ==========================================================================
-           3. CONTENEDOR PRINCIPAL
-           ========================================================================== */
-        .main-container { padding: 24px; max-width: 1200px; margin: 0 auto; width: 100%; flex-grow: 1; }
-
-        /* Metrics Summary Banner */
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .metric-card {
-            background: var(--surface); padding: 18px; border-radius: 12px; border: 1px solid var(--border-light);
-            box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 16px;
-        }
-        .metric-icon { width: 46px; height: 46px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .metric-icon.blue { background: #EBF5FB; color: #3498DB; }
-        .metric-icon.warning { background: #FEF9E7; color: var(--warning-color); }
-        .metric-icon.danger { background: #FDEDEC; color: var(--danger-color); }
-        .metric-info h4 { font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
-        .metric-info p { font-size: 20px; font-weight: 700; color: var(--text-dark); margin-top: 2px; }
-
-        /* Paneles / Tablas */
-        .panel-card { background: var(--surface); border-radius: 12px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 24px; }
-        .panel-header { padding: 18px 24px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; }
-        .panel-title { font-size: 16px; font-weight: 700; color: var(--primary-accent); display: flex; align-items: center; gap: 10px; }
-
-        .btn-action {
-            background: var(--brand-color); color: #FFF; border: none; padding: 8px 16px;
-            border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition-fast); display: flex; align-items: center; gap: 6px;
-        }
-        .btn-action:hover { background: var(--primary-accent); }
-
-        /* Estilo de Tablas */
-        .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
-        .data-table th { background: #FAFAFA; padding: 12px 20px; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border-light); }
-        .data-table td { padding: 14px 20px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
-        .data-table tr:hover { background: #F8FAFC; }
-
-        .stock-badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
-        .stock-badge.ok { background: #E8F8F5; color: var(--success-color); }
-        .stock-badge.low { background: #FEF9E7; color: var(--warning-color); }
-        .stock-badge.out { background: #FDEDEC; color: var(--danger-color); }
-
-        /* Controles y Formularios */
-        .input-group { display: flex; gap: 10px; margin-bottom: 12px; }
-        .input-group input, .input-group select { padding: 8px 12px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 13px; outline: none; }
-        .input-group input:focus { border-color: var(--brand-color); }
-
-        /* ==========================================================================
-           4. MODAL PARA NUEVO INSUMO
-           ========================================================================== */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 300; }
-        .modal-box { background: var(--surface); padding: 24px; border-radius: 12px; width: 90%; max-width: 480px; box-shadow: var(--shadow-sm); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; }
-        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-    </style>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen">
 
-    <!-- Header Panel -->
-    <header>
-        <div class="admin-brand">
-            <i class="fa-solid fa-boxes-stacked"></i>
-            <div>
-                <h1>DREX Gastro | Control Central</h1>
-                <span>Módulo de Almacén & Costos</span>
+    <!-- Header / Navbar -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid me-2 fa-utensils text-amber-500 text-2xl"></i>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">Drex Gastro</h1>
+                    <p class="text-xs text-gray-400">Sistema Interno de Almacén y Costos</p>
+                </div>
             </div>
-        </div>
-        <div class="user-badge">
-            <i class="fa-solid fa-circle-user"></i>
-            <span>Rol: <strong>Administrador / Almacén</strong></span>
+            
+            <!-- Navegación por pestañas -->
+            <nav class="flex space-x-1 bg-slate-800 p-1 rounded-lg border border-slate-700 text-sm">
+                <button onclick="switchTab('almacen')" id="tab-almacen" class="tab-btn active-tab px-4 py-2 rounded-md font-medium transition flex items-center space-x-2">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    <span>Almacén e Insumos</span>
+                </button>
+                <button onclick="switchTab('recetas')" id="tab-recetas" class="tab-btn px-4 py-2 rounded-md font-medium transition flex items-center space-x-2">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Fichas Técnicas & Recetas</span>
+                </button>
+            </nav>
         </div>
     </header>
 
-    <!-- Navegación por Tabs -->
-    <nav class="admin-nav">
-        <div class="nav-tab active" onclick="switchTab('tabInsumos', this)"><i class="fa-solid fa-wheat-awn"></i> Inventario de Insumos</div>
-        <div class="nav-tab" onclick="switchTab('tabRecetas', this)"><i class="fa-solid fa-book-open"></i> Fichas Técnicas / Recetario</div>
-        <div class="nav-tab" style="opacity: 0.5; cursor: not-allowed;" title="Próximo módulo"><i class="fa-solid fa-cash-register"></i> Caja POS (Fase Siguiente)</div>
-        <div class="nav-tab" style="opacity: 0.5; cursor: not-allowed;" title="Próximo módulo"><i class="fa-solid fa-fire-burner"></i> Pantalla Cocina KDS (Fase Siguiente)</div>
-    </nav>
+    <!-- Contenido Principal -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
 
-    <div class="main-container">
+        <!-- ==================== PESTAÑA 1: ALMACÉN E INSUMOS ==================== -->
+        <section id="sec-almacen" class="space-y-6">
+            <!-- Resumen de Alertas -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center space-x-4">
+                    <div class="p-3 bg-blue-100 text-blue-600 rounded-lg text-2xl">
+                        <i class="fa-solid fa-box"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">Total de Insumos</p>
+                        <h3 class="text-2xl font-bold text-gray-800" id="total-insumos-count">0</h3>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center space-x-4">
+                    <div class="p-3 bg-amber-100 text-amber-600 rounded-lg text-2xl">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">Stock Bajo / Crítico</p>
+                        <h3 class="text-2xl font-bold text-amber-600" id="stock-bajo-count">0</h3>
+                    </div>
+                </div>
 
-        <!-- Metrics Banner -->
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-icon blue"><i class="fa-solid fa-box-archive"></i></div>
-                <div class="metric-info">
-                    <h4>Insumos Registrados</h4>
-                    <p id="metricTotalInsumos">0</p>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center space-x-4">
+                    <div class="p-3 bg-emerald-100 text-emerald-600 rounded-lg text-2xl">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">Valor Total Inventario</p>
+                        <h3 class="text-2xl font-bold text-gray-800" id="valor-inventario-total">$0.00</h3>
+                    </div>
                 </div>
             </div>
-            <div class="metric-card">
-                <div class="metric-icon warning"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                <div class="metric-info">
-                    <h4>Stock Bajo (Alerta)</h4>
-                    <p id="metricLowStock">0</p>
+
+            <!-- Tabla de Insumos -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-5 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800">Insumos Registrados</h2>
+                        <p class="text-sm text-gray-500">Gestión de insumos, costos unitarios y control de stock.</p>
+                    </div>
+                    <button onclick="openModalNuevoInsumo()" class="bg-slate-900 hover:bg-slate-800 text-white text-sm px-4 py-2 rounded-lg transition flex items-center space-x-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Nuevo Insumo</span>
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-gray-600">
+                        <thead class="bg-gray-50 text-gray-700 font-semibold uppercase text-xs border-b border-gray-200">
+                            <tr>
+                                <th class="px-6 py-3">Insumo</th>
+                                <th class="px-6 py-3">Unidad</th>
+                                <th class="px-6 py-3">Costo / U</th>
+                                <th class="px-6 py-3">Stock Actual</th>
+                                <th class="px-6 py-3">Stock Mínimo</th>
+                                <th class="px-6 py-3">Estado</th>
+                                <th class="px-6 py-3 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-insumos" class="divide-y divide-gray-100">
+                            <!-- Filas dinámicas JS -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="metric-card">
-                <div class="metric-icon danger"><i class="fa-solid fa-ban"></i></div>
-                <div class="metric-info">
-                    <h4>Insumos Agotados</h4>
-                    <p id="metricOutStock">0</p>
+        </section>
+
+        <!-- ==================== PESTAÑA 2: FICHAS TÉCNICAS Y RECETAS ==================== -->
+        <section id="sec-recetas" class="space-y-6 hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-800">Platillos y Fichas Técnicas</h2>
+                    <p class="text-sm text-gray-500">Calcula costos de producción, rentabilidad y gestiona la disponibilidad en el menú.</p>
                 </div>
+                <button onclick="openModalNuevaReceta()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2">
+                    <i class="fa-solid fa-utensils"></i>
+                    <span>➕ Nuevo Platillo</span>
+                </button>
             </div>
+
+            <!-- Grid de Recetas / Platillos -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="grid-recetas">
+                <!-- Tarjetas dinámicas JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==================== MODALES INTEGRADOS ==================== -->
+
+    <!-- Modal 1: Ajuste de Stock (Reabastecer / Merma / Pérdida) -->
+    <div id="modal-stock" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden transform transition-all">
+            <div class="bg-slate-900 px-6 py-4 flex justify-between items-center text-white">
+                <h3 class="font-bold text-base flex items-center space-x-2">
+                    <i class="fa-solid fa-sliders text-amber-500"></i>
+                    <span>Ajuste de Stock: <span id="modal-stock-insumo-nombre" class="text-amber-400"></span></span>
+                </h3>
+                <button onclick="closeModalStock()" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+            
+            <form id="form-ajuste-stock" onsubmit="guardarAjusteStock(event)" class="p-6 space-y-4">
+                <input type="hidden" id="modal-stock-insumo-id">
+                
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Tipo de Movimiento</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="tipo_movimiento" value="entrada" checked class="peer sr-only" onchange="toggleTipoMovimiento('entrada')">
+                            <div class="p-3 text-center rounded-lg border border-gray-200 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 text-gray-700 peer-checked:text-emerald-700 font-medium transition text-sm">
+                                <i class="fa-solid fa-arrow-down-to-bracket text-emerald-600 block mb-1"></i>
+                                📥 Reabastecer (+)
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="tipo_movimiento" value="salida" class="peer sr-only" onchange="toggleTipoMovimiento('salida')">
+                            <div class="p-3 text-center rounded-lg border border-gray-200 peer-checked:border-red-500 peer-checked:bg-red-50 text-gray-700 peer-checked:text-red-700 font-medium transition text-sm">
+                                <i class="fa-solid fa-arrow-up-from-bracket text-red-600 block mb-1"></i>
+                                📤 Merma / Salida (-)
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Cantidad (<span id="modal-stock-unidad"></span>)</label>
+                    <input type="number" step="0.01" min="0.01" id="modal-stock-cantidad" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:outline-none" placeholder="Ej. 2">
+                </div>
+
+                <div id="div-motivo" class="hidden">
+                    <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Motivo de la Pérdida / Merma</label>
+                    <input type="text" id="modal-stock-motivo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:outline-none text-sm" placeholder="Ej. Se venció / Rotura / Consumo personal">
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModalStock()" class="px-4 py-2 border border-gray-300 text-gray-600 hover:bg-gray-100 rounded-lg text-sm font-medium">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-sm font-medium transition">Confirmar Movimiento</button>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <!-- SECCIÓN 1: INVENTARIO DE INSUMOS -->
-        <div id="tabInsumos">
-            <div class="panel-card">
-                <div class="panel-header">
-                    <div class="panel-title"><i class="fa-solid fa-list-check"></i> Materia Prima & Stocks Base</div>
-                    <button class="btn-action" onclick="openModalInsumo()"><i class="fa-solid fa-plus"></i> Registrar Insumo</button>
-                </div>
-
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Insumo</th>
-                            <th>Stock Actual</th>
-                            <th>Unidad</th>
-                            <th>Costo Unitario</th>
-                            <th>Stock Mínimo</th>
-                            <th>Estado Almacén</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="insumosTableBody">
-                        <!-- Renderizado desde JavaScript -->
-                    </tbody>
-                </table>
+    <!-- Modal 2: Agregar Nuevo Insumo -->
+    <div id="modal-nuevo-insumo" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden">
+            <div class="bg-slate-900 px-6 py-4 flex justify-between items-center text-white">
+                <h3 class="font-bold text-base">Nuevo Insumo / Materia Prima</h3>
+                <button onclick="closeModalNuevoInsumo()" class="text-gray-400 hover:text-white text-xl">&times;</button>
             </div>
-        </div>
-
-        <!-- SECCIÓN 2: RECETARIO & FICHA TÉCNICA (BOM) -->
-        <div id="tabRecetas" style="display: none;">
-            <div class="panel-card">
-                <div class="panel-header">
-                    <div class="panel-title"><i class="fa-solid fa-calculator"></i> Calculadora de Costos por Producto (Ficha Técnica)</div>
+            
+            <form id="form-nuevo-insumo" onsubmit="guardarNuevoInsumo(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Nombre del Insumo</label>
+                    <input type="text" id="insumo-nombre" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:outline-none text-sm" placeholder="Ej. Harina de Trigo">
                 </div>
-                <div style="padding: 24px;">
-                    <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 8px;">Selecciona un Producto del Catálogo:</label>
-                    <div class="input-group" style="max-width: 400px;">
-                        <select id="recipeProductSelect" onchange="loadRecipeDetails()" style="width: 100%;">
-                            <option value="">-- Seleccionar Producto --</option>
-                            <option value="1">Pastel de Chocolate Riam</option>
-                            <option value="3">Empanada Hojaldre de Queso</option>
-                            <option value="5">Brownie Cacao 70%</option>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Unidad Medida</label>
+                        <select id="insumo-unidad" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:outline-none text-sm bg-white">
+                            <option value="kg">Kilogramos (kg)</option>
+                            <option value="g">Gramos (g)</option>
+                            <option value="lt">Litros (lt)</option>
+                            <option value="ml">Mililitros (ml)</option>
+                            <option value="unid">Unidades (unid)</option>
                         </select>
                     </div>
-
-                    <div id="recipeDetailContainer" style="margin-top: 20px; display: none;">
-                        <h4 style="margin-bottom: 12px; color: var(--primary-accent);" id="recipeTitle">Ingredientes de la Receta</h4>
-                        
-                        <table class="data-table" style="margin-bottom: 20px;">
-                            <thead>
-                                <tr>
-                                    <th>Insumo Requerido</th>
-                                    <th>Cantidad por Unidad</th>
-                                    <th>Costo Insumo</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recipeItemsTableBody">
-                                <!-- Renderizado JS -->
-                            </tbody>
-                        </table>
-
-                        <!-- Cuadro Resumen Financiero -->
-                        <div style="background: #F8FAFC; border: 1px solid var(--border-light); padding: 18px; border-radius: 10px; display: flex; justify-content: space-between; align-align: center;">
-                            <div>
-                                <span style="font-size: 12px; color: var(--text-muted);">Costo Directo de Insumos:</span>
-                                <p style="font-size: 18px; font-weight: 700; color: var(--danger-color);" id="recipeCostText">0.00 Bs.</p>
-                            </div>
-                            <div>
-                                <span style="font-size: 12px; color: var(--text-muted);">Precio Venta al Cliente:</span>
-                                <p style="font-size: 18px; font-weight: 700; color: var(--brand-color);" id="recipePriceText">0.00 Bs.</p>
-                            </div>
-                            <div>
-                                <span style="font-size: 12px; color: var(--text-muted);">Margen de Ganancia Real:</span>
-                                <p style="font-size: 18px; font-weight: 700; color: var(--success-color);" id="recipeMarginText">0.0%</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Modal Registrar Insumo -->
-    <div class="modal-overlay" id="modalInsumo">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h3>Registrar Nuevo Insumo</h3>
-                <i class="fa-solid fa-xmark" style="cursor: pointer;" onclick="closeModalInsumo()"></i>
-            </div>
-            <div class="modal-body">
-                <label style="font-size: 12px; font-weight: 600;">Nombre del Insumo:</label>
-                <div class="input-group">
-                    <input type="text" id="inputNombreInsumo" placeholder="Ej. Harina de Trigo 000" style="width:100%;">
-                </div>
-
-                <div style="display: flex; gap: 10px;">
-                    <div style="flex:1;">
-                        <label style="font-size: 12px; font-weight: 600;">Stock Actual:</label>
-                        <div class="input-group"><input type="number" id="inputStockInsumo" value="5000"></div>
-                    </div>
-                    <div style="flex:1;">
-                        <label style="font-size: 12px; font-weight: 600;">Unidad Medida:</label>
-                        <div class="input-group">
-                            <select id="inputUnidadInsumo" style="width:100%;">
-                                <option value="g">Gramos (g)</option>
-                                <option value="ml">Mililitros (ml)</option>
-                                <option value="unid">Unidades</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Costo Unitario ($)</label>
+                        <input type="number" step="0.01" min="0" id="insumo-costo" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:outline-none text-sm" placeholder="0.00">
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 10px;">
-                    <div style="flex:1;">
-                        <label style="font-size: 12px; font-weight: 600;">Costo Total Compra (Bs):</label>
-                        <div class="input-group"><input type="number" id="inputCostoCompra" value="40.00" step="0.1"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Stock Inicial</label>
+                        <input type="number" step="0.01" min="0" id="insumo-stock" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:outline-none text-sm" placeholder="0">
                     </div>
-                    <div style="flex:1;">
-                        <label style="font-size: 12px; font-weight: 600;">Stock Mínimo (Alerta):</label>
-                        <div class="input-group"><input type="number" id="inputMinStock" value="1000"></div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Stock Mínimo</label>
+                        <input type="number" step="0.01" min="0" id="insumo-minimo" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:outline-none text-sm" placeholder="5">
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-action" style="background: var(--text-muted);" onclick="closeModalInsumo()">Cancelar</button>
-                <button class="btn-action" onclick="saveInsumo()"><i class="fa-solid fa-floppy-disk"></i> Guardar Insumo</button>
-            </div>
+
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModalNuevoInsumo()" class="px-4 py-2 border border-gray-300 text-gray-600 hover:bg-gray-100 rounded-lg text-sm font-medium">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-sm font-medium transition">Guardar Insumo</button>
+                </div>
+            </form>
         </div>
     </div>
 
+    <!-- Modal 3: Agregar Nuevo Platillo / Receta -->
+    <div id="modal-nueva-receta" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div class="bg-slate-900 px-6 py-4 flex justify-between items-center text-white flex-shrink-0">
+                <h3 class="font-bold text-base">Crear Nuevo Platillo / Receta</h3>
+                <button onclick="closeModalNuevaReceta()" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+            
+            <form id="form-nueva-receta" onsubmit="guardarNuevaReceta(event)" class="p-6 space-y-4 overflow-y-auto flex-grow">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Nombre del Platillo</label>
+                    <input type="text" id="receta-nombre" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:outline-none text-sm" placeholder="Ej. Hamburguesa Clásica">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Categoría</label>
+                        <select id="receta-categoria" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:outline-none text-sm bg-white">
+                            <option value="Platos Fuertes">Platos Fuertes</option>
+                            <option value="Entradas">Entradas</option>
+                            <option value="Postres">Postres</option>
+                            <option value="Bebidas">Bebidas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Precio Venta ($)</label>
+                        <input type="number" step="0.01" min="0" id="receta-precio" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:outline-none text-sm" placeholder="0.00">
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 pt-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-xs font-semibold uppercase text-gray-500">Insumos de la Receta</label>
+                        <button type="button" onclick="agregarFilaInsumoReceta()" class="text-xs text-emerald-600 font-bold hover:underline">+ Agregar Insumo</button>
+                    </div>
+                    
+                    <div id="contenedor-insumos-receta" class="space-y-2">
+                        <!-- Filas dinámicas de ingredientes -->
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="closeModalNuevaReceta()" class="px-4 py-2 border border-gray-300 text-gray-600 hover:bg-gray-100 rounded-lg text-sm font-medium">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition">Guardar Platillo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ==================== JAVASCRIPT ==================== -->
     <script>
-        /* ==========================================================================
-           LÓGICA DEL ALMACÉN & COSTOS (JS)
-           ========================================================================== */
-        
-        // Base de datos local inicial de insumos
-        let rawMaterials = [
-            { id: 1, nombre: "Harina de Trigo Especial", stock: 15000, unidad: "g", costoBase: 40.00, paqueteCantidad: 5000, minStock: 3000 }, // Costo: 0.008 Bs/g
-            { id: 2, nombre: "Azúcar Blanca Refinada", stock: 2000, unidad: "g", costoBase: 35.00, paqueteCantidad: 5000, minStock: 2500 },  // Costo: 0.007 Bs/g (Stock Bajo)
-            { id: 3, nombre: "Huevos Frescos", stock: 60, unidad: "unid", costoBase: 27.00, paqueteCantidad: 30, minStock: 20 },            // Costo: 0.90 Bs/unid
-            { id: 4, nombre: "Cacao en Polvo 70%", stock: 0, unidad: "g", costoBase: 25.00, paqueteCantidad: 500, minStock: 500 }            // Agotado
+        // DATOS INICIALES (Cargados de localStorage o por defecto)
+        let insumos = JSON.parse(localStorage.getItem('drex_insumos')) || [
+            { id: 1, nombre: "Carne Molida de Res", unidad: "kg", costo: 6.50, stock: 15, min: 5 },
+            { id: 2, nombre: "Pan para Hamburguesa", unidad: "unid", costo: 0.30, stock: 40, min: 20 },
+            { id: 3, nombre: "Queso Cheddar", unidad: "kg", costo: 8.00, stock: 3, min: 2 },
+            { id: 4, nombre: "Papas", unidad: "kg", costo: 1.20, stock: 25, min: 10 },
+            { id: 5, nombre: "Pollo Entero", unidad: "kg", costo: 4.50, stock: 8, min: 4 },
+            { id: 6, nombre: "Harina de Trigo", unidad: "kg", costo: 0.90, stock: 10, min: 5 }
         ];
 
-        // Recetas por producto
-        const recipes = {
-            "1": [ // Pastel de Chocolate Riam
-                { insumoId: 1, cantidad: 400 }, // 400g Harina
-                { insumoId: 2, cantidad: 300 }, // 300g Azúcar
-                { insumoId: 3, cantidad: 4 },   // 4 Huevos
-                { insumoId: 4, cantidad: 100 }  // 100g Cacao
-            ],
-            "3": [ // Empanada Hojaldre de Queso
-                { insumoId: 1, cantidad: 120 }, // 120g Harina
-                { insumoId: 3, cantidad: 1 }    // 1 Huevo
-            ]
-        };
+        let recetas = JSON.parse(localStorage.getItem('drex_recetas')) || [
+            {
+                id: 101,
+                nombre: "Hamburguesa Doble Queso",
+                categoria: "Platos Fuertes",
+                precioVenta: 12.00,
+                activo: true, // Si está activo en el menú o no
+                ingredientes: [
+                    { insumoId: 1, cantidad: 0.25 }, // 250g carne
+                    { insumoId: 2, cantidad: 1 },    // 1 pan
+                    { insumoId: 3, cantidad: 0.05 }  // 50g queso
+                ]
+            },
+            {
+                id: 102,
+                nombre: "Porción de Papas Fritas",
+                categoria: "Entradas",
+                precioVenta: 4.50,
+                activo: true,
+                ingredientes: [
+                    { insumoId: 4, cantidad: 0.30 } // 300g papas
+                ]
+            }
+        ];
 
-        const productPrices = { "1": 25.00, "3": 8.00, "5": 12.00 };
-
-        function renderInsumosTable() {
-            const tbody = document.getElementById('insumosTableBody');
-            tbody.innerHTML = '';
-
-            let lowStockCount = 0;
-            let outStockCount = 0;
-
-            rawMaterials.forEach(item => {
-                const costoUnitario = item.costoBase / item.paqueteCantidad;
-                let badgeClass = 'ok';
-                let badgeText = 'Correcto';
-
-                if(item.stock <= 0) {
-                    badgeClass = 'out';
-                    badgeText = 'Agotado';
-                    outStockCount++;
-                } else if(item.stock <= item.minStock) {
-                    badgeClass = 'low';
-                    badgeText = 'Stock Bajo (Alerta)';
-                    lowStockCount++;
-                }
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td><strong>${item.nombre}</strong></td>
-                        <td>${item.stock.toLocaleString()}</td>
-                        <td>${item.unidad}</td>
-                        <td>${costoUnitario.toFixed(4)} Bs. / ${item.unidad}</td>
-                        <td>${item.minStock.toLocaleString()} ${item.unidad}</td>
-                        <td><span class="stock-badge ${badgeClass}">${badgeText}</span></td>
-                        <td>
-                            <button onclick="addStockPrompt(${item.id})" style="border:none; background:#EBF5FB; color:#3498DB; padding:6px 10px; border-radius:6px; cursor:pointer; font-weight:600;">+ Reabastecer</button>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            // Actualizar Métricas
-            document.getElementById('metricTotalInsumos').innerText = rawMaterials.length;
-            document.getElementById('metricLowStock').innerText = lowStockCount;
-            document.getElementById('metricOutStock').innerText = outStockCount;
+        // Guardar en localStorage
+        function guardarEstado() {
+            localStorage.setItem('drex_insumos', JSON.stringify(insumos));
+            localStorage.setItem('drex_recetas', JSON.stringify(recetas));
         }
 
-        function switchTab(tabId, tabElement) {
-            document.getElementById('tabInsumos').style.display = tabId === 'tabInsumos' ? 'block' : 'none';
-            document.getElementById('tabRecetas').style.display = tabId === 'tabRecetas' ? 'block' : 'none';
+        // Navegación entre Pestañas
+        function switchTab(tab) {
+            document.getElementById('sec-almacen').classList.add('hidden');
+            document.getElementById('sec-recetas').classList.add('hidden');
             
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-            tabElement.classList.add('active');
-        }
+            document.getElementById('tab-almacen').classList.remove('bg-slate-700', 'text-amber-400');
+            document.getElementById('tab-recetas').classList.remove('bg-slate-700', 'text-amber-400');
 
-        function openModalInsumo() { document.getElementById('modalInsumo').style.display = 'flex'; }
-        function closeModalInsumo() { document.getElementById('modalInsumo').style.display = 'none'; }
-
-        function saveInsumo() {
-            const nombre = document.getElementById('inputNombreInsumo').value;
-            const stock = parseFloat(document.getElementById('inputStockInsumo').value);
-            const unidad = document.getElementById('inputUnidadInsumo').value;
-            const costo = parseFloat(document.getElementById('inputCostoCompra').value);
-            const minStock = parseFloat(document.getElementById('inputMinStock').value);
-
-            if(!nombre) return alert('Ingresa el nombre del insumo.');
-
-            rawMaterials.push({
-                id: Date.now(),
-                nombre: nombre,
-                stock: stock,
-                unidad: unidad,
-                costoBase: costo,
-                paqueteCantidad: stock > 0 ? stock : 1,
-                minStock: minStock
-            });
-
-            closeModalInsumo();
-            renderInsumosTable();
-        }
-
-        function addStockPrompt(id) {
-            const item = rawMaterials.find(i => i.id === id);
-            const qty = prompt(`Cantidad a ingresar para ${item.nombre} (${item.unidad}):`, "1000");
-            if(qty && !isNaN(qty)) {
-                item.stock += parseFloat(qty);
-                renderInsumosTable();
+            if(tab === 'almacen') {
+                document.getElementById('sec-almacen').classList.remove('hidden');
+                document.getElementById('tab-almacen').classList.add('bg-slate-700', 'text-amber-400');
+                renderAlmacen();
+            } else {
+                document.getElementById('sec-recetas').classList.remove('hidden');
+                document.getElementById('tab-recetas').classList.add('bg-slate-700', 'text-amber-400');
+                renderRecetas();
             }
         }
 
-        function loadRecipeDetails() {
-            const prodId = document.getElementById('recipeProductSelect').value;
-            const container = document.getElementById('recipeDetailContainer');
-            if(!prodId || !recipes[prodId]) {
-                container.style.display = 'none';
-                return;
-            }
+        // ==================== RENDERS ====================
 
-            container.style.display = 'block';
-            const tbody = document.getElementById('recipeItemsTableBody');
+        // Renderizar Tabla de Almacén
+        function renderAlmacen() {
+            const tbody = document.getElementById('tabla-insumos');
             tbody.innerHTML = '';
 
-            let totalRecipeCost = 0;
+            let stockBajoCount = 0;
+            let valorTotal = 0;
 
-            recipes[prodId].forEach(ing => {
-                const insumo = rawMaterials.find(m => m.id === ing.insumoId);
-                const costoUnitario = insumo ? (insumo.costoBase / insumo.paqueteCantidad) : 0;
-                const costoIngrediente = costoUnitario * ing.cantidad;
-                totalRecipeCost += costoIngrediente;
+            insumos.forEach(i => {
+                const totalCostoInsumo = i.stock * i.costo;
+                valorTotal += totalCostoInsumo;
+                const esBajo = i.stock <= i.min;
+                if(esBajo) stockBajoCount++;
 
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${insumo ? insumo.nombre : 'Desconocido'}</td>
-                        <td>${ing.cantidad} ${insumo ? insumo.unidad : ''}</td>
-                        <td>${costoIngrediente.toFixed(2)} Bs.</td>
-                    </tr>
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50/80 transition";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-semibold text-gray-800">${i.nombre}</td>
+                    <td class="px-6 py-4"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs uppercase font-medium">${i.unidad}</span></td>
+                    <td class="px-6 py-4 font-medium">$${i.costo.toFixed(2)}</td>
+                    <td class="px-6 py-4 font-bold ${esBajo ? 'text-red-600' : 'text-gray-800'}">${i.stock} ${i.unidad}</td>
+                    <td class="px-6 py-4 text-gray-400">${i.min} ${i.unidad}</td>
+                    <td class="px-6 py-4">
+                        ${esBajo 
+                            ? `<span class="bg-red-100 text-red-700 text-xs px-2.5 py-1 rounded-full font-semibold flex items-center w-fit space-x-1"><i class="fa-solid fa-triangle-exclamation text-xs"></i><span>Stock Bajo</span></span>`
+                            : `<span class="bg-emerald-100 text-emerald-700 text-xs px-2.5 py-1 rounded-full font-semibold flex items-center w-fit space-x-1"><i class="fa-solid fa-circle-check text-xs"></i><span>Óptimo</span></span>`
+                        }
+                    </td>
+                    <td class="px-6 py-4 text-right space-x-1">
+                        <button onclick="openModalStock(${i.id})" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-slate-300">
+                            <i class="fa-solid fa-sliders me-1"></i> Ajustar Stock
+                        </button>
+                    </td>
                 `;
+                tbody.appendChild(tr);
             });
 
-            const precioVenta = productPrices[prodId] || 0;
-            const ganancia = precioVenta - totalRecipeCost;
-            const margenPct = precioVenta > 0 ? ((ganancia / precioVenta) * 100) : 0;
-
-            document.getElementById('recipeCostText').innerText = `${totalRecipeCost.toFixed(2)} Bs.`;
-            document.getElementById('recipePriceText').innerText = `${precioVenta.toFixed(2)} Bs.`;
-            document.getElementById('recipeMarginText').innerText = `${margenPct.toFixed(1)}%`;
+            document.getElementById('total-insumos-count').innerText = insumos.length;
+            document.getElementById('stock-bajo-count').innerText = stockBajoCount;
+            document.getElementById('valor-inventario-total').innerText = `$${valorTotal.toFixed(2)}`;
         }
 
-        renderInsumosTable();
+        // Renderizar Fichas Técnicas / Recetas
+        function renderRecetas() {
+            const grid = document.getElementById('grid-recetas');
+            grid.innerHTML = '';
+
+            recetas.forEach(r => {
+                // Calcular costo total del plato según insumos
+                let costoTotalReceta = 0;
+                let ingredientesListHTML = '';
+
+                r.ingredientes.forEach(ing => {
+                    const insumo = insumos.find(i => i.id === ing.insumoId);
+                    if(insumo) {
+                        const costoIngrediente = ing.cantidad * insumo.costo;
+                        costoTotalReceta += costoIngrediente;
+                        ingredientesListHTML += `
+                            <li class="flex justify-between text-xs py-1 border-b border-gray-100">
+                                <span>${insumo.nombre} (${ing.cantidad} ${insumo.unidad})</span>
+                                <span class="text-gray-500 font-medium">$${costoIngrediente.toFixed(2)}</span>
+                            </li>
+                        `;
+                    }
+                });
+
+                const margenGanancia = r.precioVenta - costoTotalReceta;
+                const porcentajeRentabilidad = r.precioVenta > 0 ? ((margenGanancia / r.precioVenta) * 100).toFixed(1) : 0;
+
+                const card = document.createElement('div');
+                card.className = `bg-white rounded-xl shadow-sm border transition flex flex-col justify-between overflow-hidden ${!r.activo ? 'opacity-60 border-dashed border-gray-300' : 'border-gray-200'}`;
+                
+                card.innerHTML = `
+                    <div>
+                        <!-- Header Tarjeta -->
+                        <div class="p-5 border-b border-gray-100 bg-gray-50/50 flex justify-between items-start">
+                            <div>
+                                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-slate-200 text-slate-700">${r.categoria}</span>
+                                <h3 class="text-lg font-bold text-gray-800 mt-1">${r.nombre}</h3>
+                            </div>
+                            <!-- Switch Activo / Desactivado (Temporada) -->
+                            <button onclick="toggleEstadoReceta(${r.id})" title="${r.activo ? 'Ocultar/Desactivar de temporada' : 'Activar platillo'}" class="text-xs px-2.5 py-1 rounded-full font-semibold transition ${r.activo ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-600'}">
+                                ${r.activo ? '<i class="fa-solid fa-eye me-1"></i> Visible' : '<i class="fa-solid fa-eye-slash me-1"></i> Oculto'}
+                            </button>
+                        </div>
+
+                        <!-- Detalle Insumos -->
+                        <div class="p-5 space-y-3">
+                            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Insumos / Ficha Técnica</p>
+                            <ul class="divide-y divide-gray-100 max-h-36 overflow-y-auto pr-1">
+                                ${ingredientesListHTML || '<li class="text-xs text-gray-400 italic">Sin ingredientes registrados</li>'}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Footer Finanzas Platillo -->
+                    <div class="bg-gray-50 p-4 border-t border-gray-100 space-y-3">
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="bg-white p-2 rounded border border-gray-200">
+                                <span class="text-[10px] text-gray-400 uppercase font-bold block">Costo</span>
+                                <span class="text-sm font-bold text-gray-700">$${costoTotalReceta.toFixed(2)}</span>
+                            </div>
+                            <div class="bg-white p-2 rounded border border-gray-200">
+                                <span class="text-[10px] text-gray-400 uppercase font-bold block">P. Venta</span>
+                                <span class="text-sm font-bold text-slate-900">$${r.precioVenta.toFixed(2)}</span>
+                            </div>
+                            <div class="bg-white p-2 rounded border border-gray-200">
+                                <span class="text-[10px] text-gray-400 uppercase font-bold block">Margen</span>
+                                <span class="text-sm font-bold text-emerald-600">${porcentajeRentabilidad}%</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-2">
+                            <button onclick="eliminarReceta(${r.id})" class="text-xs text-red-500 hover:text-red-700 font-medium transition flex items-center">
+                                <i class="fa-solid fa-trash me-1"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // ==================== LÓGICA DE MODALES Y LOGICA ====================
+
+        // Modal Ajuste de Stock
+        function openModalStock(id) {
+            const insumo = insumos.find(i => i.id === id);
+            if(!insumo) return;
+
+            document.getElementById('modal-stock-insumo-id').value = insumo.id;
+            document.getElementById('modal-stock-insumo-nombre').innerText = insumo.nombre;
+            document.getElementById('modal-stock-unidad').innerText = insumo.unidad;
+            document.getElementById('modal-stock-cantidad').value = '';
+            document.getElementById('modal-stock-motivo').value = '';
+            
+            // Forzar radio "entrada" por defecto
+            document.querySelector('input[name="tipo_movimiento"][value="entrada"]').checked = true;
+            toggleTipoMovimiento('entrada');
+
+            document.getElementById('modal-stock').classList.remove('hidden');
+        }
+
+        function closeModalStock() {
+            document.getElementById('modal-stock').classList.add('hidden');
+        }
+
+        function toggleTipoMovimiento(tipo) {
+            const divMotivo = document.getElementById('div-motivo');
+            if(tipo === 'salida') {
+                divMotivo.classList.remove('hidden');
+            } else {
+                divMotivo.classList.add('hidden');
+            }
+        }
+
+        function guardarAjusteStock(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('modal-stock-insumo-id').value);
+            const cantidad = parseFloat(document.getElementById('modal-stock-cantidad').value);
+            const tipo = document.querySelector('input[name="tipo_movimiento"]:checked').value;
+            const motivo = document.getElementById('modal-stock-motivo').value;
+
+            const insumo = insumos.find(i => i.id === id);
+            if(insumo && cantidad > 0) {
+                if(tipo === 'entrada') {
+                    insumo.stock += cantidad;
+                } else {
+                    if(cantidad > insumo.stock) {
+                        alert("No puedes registrar una salida mayor al stock existente.");
+                        return;
+                    }
+                    insumo.stock -= cantidad;
+                }
+                guardarEstado();
+                renderAlmacen();
+                closeModalStock();
+            }
+        }
+
+        // Modal Nuevo Insumo
+        function openModalNuevoInsumo() {
+            document.getElementById('form-nuevo-insumo').reset();
+            document.getElementById('modal-nuevo-insumo').classList.remove('hidden');
+        }
+
+        function closeModalNuevoInsumo() {
+            document.getElementById('modal-nuevo-insumo').classList.add('hidden');
+        }
+
+        function guardarNuevoInsumo(e) {
+            e.preventDefault();
+            const nuevo = {
+                id: Date.now(),
+                nombre: document.getElementById('insumo-nombre').value,
+                unidad: document.getElementById('insumo-unidad').value,
+                costo: parseFloat(document.getElementById('insumo-costo').value),
+                stock: parseFloat(document.getElementById('insumo-stock').value),
+                min: parseFloat(document.getElementById('insumo-minimo').value)
+            };
+            insumos.push(nuevo);
+            guardarEstado();
+            renderAlmacen();
+            closeModalNuevoInsumo();
+        }
+
+        // Modal Nueva Receta / Platillo
+        function openModalNuevaReceta() {
+            document.getElementById('form-nueva-receta').reset();
+            document.getElementById('contenedor-insumos-receta').innerHTML = '';
+            agregarFilaInsumoReceta(); // Agregar primera fila por defecto
+            document.getElementById('modal-nueva-receta').classList.remove('hidden');
+        }
+
+        function closeModalNuevaReceta() {
+            document.getElementById('modal-nueva-receta').classList.add('hidden');
+        }
+
+        function agregarFilaInsumoReceta() {
+            const container = document.getElementById('contenedor-insumos-receta');
+            const div = document.createElement('div');
+            div.className = "flex items-center space-x-2 fila-insumo-receta";
+
+            let optionsInsumos = insumos.map(i => `<option value="${i.id}">${i.nombre} (${i.unidad})</option>`).join('');
+
+            div.innerHTML = `
+                <select class="select-insumo w-2/3 px-2 py-1.5 border border-gray-300 rounded text-xs bg-white">
+                    ${optionsInsumos}
+                </select>
+                <input type="number" step="0.01" min="0.001" placeholder="Cant." class="input-cant-insumo w-1/3 px-2 py-1.5 border border-gray-300 rounded text-xs">
+                <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700 px-1">&times;</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function guardarNuevaReceta(e) {
+            e.preventDefault();
+            
+            const filas = document.querySelectorAll('.fila-insumo-receta');
+            const ingredientes = [];
+
+            filas.forEach(f => {
+                const insumoId = parseInt(f.querySelector('.select-insumo').value);
+                const cantidad = parseFloat(f.querySelector('.input-cant-insumo').value);
+                if(insumoId && cantidad > 0) {
+                    ingredientes.push({ insumoId, cantidad });
+                }
+            });
+
+            const nuevaReceta = {
+                id: Date.now(),
+                nombre: document.getElementById('receta-nombre').value,
+                categoria: document.getElementById('receta-categoria').value,
+                precioVenta: parseFloat(document.getElementById('receta-precio').value),
+                activo: true,
+                ingredientes: ingredientes
+            };
+
+            recetas.push(nuevaReceta);
+            guardarEstado();
+            renderRecetas();
+            closeModalNuevaReceta();
+        }
+
+        // Alternar Visibilidad/Estado de Platillo (Activo / Oculto por Temporada)
+        function toggleEstadoReceta(id) {
+            const receta = recetas.find(r => r.id === id);
+            if(receta) {
+                receta.activo = !receta.activo;
+                guardarEstado();
+                renderRecetas();
+            }
+        }
+
+        // Eliminar Receta
+        function eliminarReceta(id) {
+            if(confirm("¿Seguro que deseas eliminar este platillo del menú?")) {
+                recetas = recetas.filter(r => r.id !== id);
+                guardarEstado();
+                renderRecetas();
+            }
+        }
+
+        // Inicialización
+        switchTab('almacen');
     </script>
 </body>
 </html>
